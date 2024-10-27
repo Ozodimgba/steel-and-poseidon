@@ -16,7 +16,7 @@ async fn setup() -> (BanksClient, Keypair, Hash) {
 
 async fn get_power_status(banks: &mut BanksClient, power_address: Pubkey) -> PowerStatus {
     let account = banks.get_account(power_address).await.unwrap().unwrap();
-    PowerStatus::try_from_bytes(&account.data).unwrap()
+    *PowerStatus::try_from_bytes(&account.data).unwrap()
 }
 
 #[tokio::test]
@@ -25,7 +25,8 @@ async fn test_initialize_power() {
     let (mut banks, payer, recent_blockhash) = setup().await;
     
     // Calculate PDA for power account
-    let seeds = &[b"power"];
+    let power_seed = b"power";
+    let seeds: &[&[u8]] = &[power_seed];
     let (power_address, _) = Pubkey::find_program_address(seeds, &lever_api::ID);
     
     // Create initialize instruction
@@ -58,7 +59,8 @@ async fn test_switch_power() {
     let (mut banks, payer, recent_blockhash) = setup().await;
     
     // Initialize power account first
-    let seeds = &[b"power"];
+    let power_seed = b"power";
+    let seeds: &[&[u8]] = &[power_seed];
     let (power_address, _) = Pubkey::find_program_address(seeds, &lever_api::ID);
     
     let init_ix = lever_api::sdk::initialize(
@@ -120,7 +122,8 @@ async fn test_switch_power_invalid_name() {
     let (mut banks, payer, recent_blockhash) = setup().await;
     
     // Initialize power account
-    let seeds = &[b"power"];
+    let power_seed = b"power";
+    let seeds: &[&[u8]] = &[power_seed];
     let (power_address, _) = Pubkey::find_program_address(seeds, &lever_api::ID);
     
     let init_ix = lever_api::sdk::initialize(
@@ -158,7 +161,8 @@ async fn test_switch_power_uninitialized() {
     let (mut banks, payer, recent_blockhash) = setup().await;
     
     // Try to switch power without initializing
-    let seeds = &[b"power"];
+    let power_seed = b"power";
+    let seeds: &[&[u8]] = &[power_seed];
     let (power_address, _) = Pubkey::find_program_address(seeds, &lever_api::ID);
     
     let switch_ix = lever_api::sdk::switch_power(
