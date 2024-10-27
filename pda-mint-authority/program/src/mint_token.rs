@@ -1,12 +1,12 @@
 use steel::*;
-use api::instruction::{CreateToken, MintToken};
+use api::instruction::MintToken;
 use api::prelude::*;
 use spl_token::instruction::mint_to;
 use spl_associated_token_account::*;
 
 pub fn process_mint_token(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramResult {
 
-    let args = MintToken::try_from_bytes(data)?;
+    let _args = MintToken::try_from_bytes(data)?;
 
     let [
     payer,
@@ -18,14 +18,14 @@ pub fn process_mint_token(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramR
         return Err(ProgramError::NotEnoughAccountKeys);
     };
 
-    let (mint_pda, bump) = Pubkey::find_program_address(&[b"mint"], &api::ID);
+    let (_mint_pda, bump) = Pubkey::find_program_address(&[MintAuthorityPda::SEED_PREFIX.as_bytes()], &api::ID);
 
     // Validate accounts
     payer.is_signer()?;
 
     mint_account
         .is_writable()?
-        .has_seeds(&[b"mint"], bump, &api::ID)?
+        .has_seeds(&[MintAuthorityPda::SEED_PREFIX.as_bytes()], bump, &api::ID)?
         .has_owner(payer.key)?;
 
 
@@ -74,7 +74,7 @@ pub fn process_mint_token(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramR
 
     solana_program::msg!("Minting Token to associated token account...");
     solana_program::program::invoke_signed(
-        &spl_token::instruction::mint_to(
+        &mint_to(
             token_program.key,
             mint_account.key,
             associated_token_account.key,
