@@ -1,6 +1,5 @@
 use hand_api::prelude::*;
 use steel::*;
-use lever_api::*;
 
 pub fn process_pull_lever(accounts: &[AccountInfo], data: &[u8]) -> ProgramResult {
     let [power_info, lever_program] = accounts else {

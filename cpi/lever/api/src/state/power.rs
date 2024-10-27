@@ -1,7 +1,5 @@
 use steel::*;
 
-use super::LeverAccount;
-
 #[repr(u8)]
 #[derive(Clone, Copy, Debug, Eq, PartialEq, IntoPrimitive, TryFromPrimitive)]
 pub enum AccountType {

@@ -11,6 +11,7 @@ hand-api.workspace = true
 solana-program.workspace = true
 steel.workspace = true
 lever-api.workspace = true
+lever-program.workspace = true
 
 [dev-dependencies]
 bs64 = "0.1.2"
