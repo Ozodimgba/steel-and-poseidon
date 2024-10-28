@@ -2586,6 +2586,7 @@ dependencies = [
  "bs64",
  "mpl-token-metadata",
  "rand 0.8.5",
+ "solana-client",
  "solana-program",
  "solana-program-test",
  "solana-sdk",
