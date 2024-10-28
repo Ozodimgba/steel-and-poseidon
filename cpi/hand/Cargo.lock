@@ -1611,7 +1611,6 @@ dependencies = [
  "bs64",
  "hand-api",
  "lever-api",
- "lever-program",
  "rand 0.8.5",
  "solana-program",
  "solana-program-test",
@@ -2003,15 +2002,6 @@ dependencies = [
  "solana-program",
  "steel",
  "thiserror",
-]
-
-[[package]]
-name = "lever-program"
-version = "0.1.0"
-dependencies = [
- "lever-api",
- "solana-program",
- "steel",
 ]
 
 [[package]]
