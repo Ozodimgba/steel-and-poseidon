@@ -3,8 +3,8 @@ use steel::*;
 #[repr(u8)]
 #[derive(Clone, Copy, Debug, Eq, PartialEq, TryFromPrimitive)]
 pub enum LeverInstruction {
-    Initialize = 0,
-    SwitchPower = 1,
+    InitializeArgs = 0,
+    SwitchPowerArgs = 1,
 }
 
 #[repr(C)]

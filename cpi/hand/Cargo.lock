@@ -1597,6 +1597,7 @@ name = "hand-api"
 version = "0.1.0"
 dependencies = [
  "bytemuck",
+ "lever-api",
  "num_enum 0.7.3",
  "solana-program",
  "steel",

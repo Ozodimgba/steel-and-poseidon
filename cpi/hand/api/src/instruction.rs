@@ -3,7 +3,7 @@ use steel::*;
 #[repr(u8)]
 #[derive(Clone, Copy, Debug, Eq, PartialEq, TryFromPrimitive)]
 pub enum HandInstruction {
-    PullLever = 0,
+    PullLeverArgs = 0,
 }
 
 #[repr(C)]

@@ -13,7 +13,7 @@ pub fn process_instruction(
     let (ix, data) = parse_instruction(&hand_api::ID, program_id, data)?;
 
     match ix {
-        HandInstruction::PullLever => process_pull_lever(accounts, data)?,
+        HandInstruction::PullLeverArgs => process_pull_lever(accounts, data)?,
     }
 
     Ok(())

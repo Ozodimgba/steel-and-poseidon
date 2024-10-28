@@ -15,8 +15,8 @@ pub fn process_instruction(
     let (ix, data) = parse_instruction(&lever_api::ID, program_id, data)?;
 
     match ix {
-        LeverInstruction::Initialize => process_initialize(accounts, data)?,
-        LeverInstruction::Add => process_add(accounts, data)?,
+        LeverInstruction::InitializeArgs => process_initialize(accounts, data)?,
+        LeverInstruction::SwitchPowerArgs => process_switch_power(accounts, data)?,
     }
 
     Ok(())
