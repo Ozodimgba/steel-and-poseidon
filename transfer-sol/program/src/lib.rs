@@ -1,3 +1,5 @@
+use solana_program::msg;
+
 mod transfer;
 
 use transfer::*;
@@ -10,14 +12,23 @@ pub fn process_instruction(
     accounts: &[AccountInfo],
     data: &[u8],
 ) -> ProgramResult {
-    let (ix, data) = parse_instruction(&transfer_sol_api::ID, program_id, data)?;
+    msg!("Instruction data length: {}", data.len());
+    msg!("Raw instruction data: {:?}", data);
+
+    // Parse_instruction 
+    let (ix, args_data) = parse_instruction::<TransferInstruction>(&transfer_sol_api::ID, program_id, data)?;
+    msg!("✅ Parsed instruction type: {:?}", ix);
 
     match ix {
-        TransferInstruction::TransferSolWithCpi => process_transfer_sol_with_cpi(accounts, data)?,
-        TransferInstruction::TransferSolWithProgram => process_transfer_sol_with_program(accounts, data)?,
+        TransferInstruction::TransferSolWithCpi => {
+            msg!("Processing TransferSolWithCpi");
+            process_transfer_sol_with_cpi(accounts, args_data)
+        }
+        TransferInstruction::TransferSolWithProgram => {
+            msg!("Processing TransferSolWithProgram");
+            process_transfer_sol_with_program(accounts, args_data)
+        }
     }
-
-    Ok(())
 }
 
 entrypoint!(process_instruction);
