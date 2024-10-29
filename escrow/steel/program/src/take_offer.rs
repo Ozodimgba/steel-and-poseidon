@@ -1,4 +1,5 @@
 use api::prelude::*;
+use spl_token::instruction::close_account;
 use steel::*;
 
 pub fn process_take_offer(accounts: &[AccountInfo], data: &[u8]) -> ProgramResult {
@@ -42,7 +43,7 @@ pub fn process_take_offer(accounts: &[AccountInfo], data: &[u8]) -> ProgramResul
         .check(|account| account.mint == *token_mint_b.key && account.owner == *maker.key)?;
 
     // Get the offer data
-    let offer_data = offer.as_account::<Offer>(&api::ID)?;
+    let offer_data = offer.to_account::<Offer>(&api::ID)?;
 
     // Verify offer details
     assert_eq!(offer_data.maker, *maker.key);
@@ -76,6 +77,8 @@ pub fn process_take_offer(accounts: &[AccountInfo], data: &[u8]) -> ProgramResul
         &offer_data.id.to_le_bytes(),
         &[offer_data.bump],
     ];
+    
+    let signer_seeds = &[&offer_seeds[..]];
 
     transfer_signed(
         offer,
@@ -83,20 +86,39 @@ pub fn process_take_offer(accounts: &[AccountInfo], data: &[u8]) -> ProgramResul
         taker_token_account_a,
         token_program,
         vault.to_token_account()?.amount,
-        offer_seeds,
+        signer_seeds,
     )?;
 
     // Close vault account
-    close_token_account(
-        vault,
-        maker,
-        offer,
-        token_program,
-        offer_seeds,
+    let close_vault_ix = spl_token::instruction::close_account(
+        &spl_token::ID,
+        vault.key,
+        maker.key,
+        offer.key,
+        &[offer.key],
     )?;
 
     // Close offer account and return rent
-    offer.close(maker)?;
+
+    solana_program::program::invoke_signed(
+        &close_vault_ix,
+        &[
+            vault.clone(),
+            maker.clone(),
+            offer.clone(),
+        ],
+        signer_seeds,
+    )?;
+
+    // Close offer account and return rent
+    let dest_starting_lamports = maker.lamports();
+    let offer_lamports = offer.lamports();
+
+    **maker.lamports.borrow_mut() = dest_starting_lamports.checked_add(offer_lamports).unwrap();
+    **offer.lamports.borrow_mut() = 0;
+
+    let mut offer_data = offer.try_borrow_mut_data()?;
+    offer_data.fill(0);
 
     Ok(())
 }
