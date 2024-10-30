@@ -510,33 +510,46 @@ async fn test_create_token() -> Result<(), Box<dyn Error>> {
     println!("Transaction signature: {}", signature);
 
     // Verify mint account
+    println!("Verifying mint account...");
     let mint_account = client.get_account(&mint_pda).await?;
     assert_eq!(mint_account.owner, spl_token::ID, "Mint account should be owned by Token program");
+    println!("Mint account verification has passed");
     
+    println!("Unpacking mint data...");
     let mint_data = Mint::unpack(&mint_account.data)?;
     assert_eq!(mint_data.decimals, 9, "We should have 9 decimals");
+    println!("We have 9 exactly decimals");
     assert!(mint_data.is_initialized, "Mint should be initialized");
+    println!("Mint has been initialized...");
     assert_eq!(
         mint_data.mint_authority,
         COption::Some(mint_pda),
         "Our PDA should be the mint authority"
     );
+    println!("PDA is the mint authority...");
 
     // Test minting tokens
+    println!("Testing minting tokens");
     let mint_amount = 1_000_000;
+    println!("Amount initialized at 1 SOL");
     
+    println!("Getting associated token address");
     let token_account = spl_associated_token_account::get_associated_token_address(
         &payer.pubkey(),
         &mint_pda
     );
+    println!("Successfully gotten ATA");
 
+    println!("Creating ATA");
     let create_ata_ix = spl_associated_token_account::instruction::create_associated_token_account(
         &payer.pubkey(),
         &payer.pubkey(),
         &mint_pda,
         &spl_token::id(),
     );
+    println!("Successfully created ATA");
 
+    println!("Minting tokens to token account");
     let mint_tokens_ix = spl_token::instruction::mint_to(
         &spl_token::id(),
         &mint_pda,
@@ -545,23 +558,34 @@ async fn test_create_token() -> Result<(), Box<dyn Error>> {
         &[],
         mint_amount,
     )?;
+    println!("Successfully minted tokens");
 
+    println!("Looking for recent blockhash");
     let recent_blockhash = client.get_latest_blockhash().await?;
+    println!("Gotten blockhash");
     
+    println!("Signing mint tx...");
     let mint_transaction = Transaction::new_signed_with_payer(
         &[create_ata_ix, mint_tokens_ix],
         Some(&payer.pubkey()),
         &[&payer],
         recent_blockhash,
     );
+    println!("Successfully signed");
 
+    println!("Sending and confirming mint tx");
     let mint_signature = client.send_and_confirm_transaction(&mint_transaction).await?;
     println!("Mint transaction signature: {}", mint_signature);
 
     // Verify token account
+    println!("Verifying token account");
     let token_account_info = client.get_account(&token_account).await?;
+    println!("Token account verified");
+    println!("Unpacking token account");
     let token_account_data = spl_token::state::Account::unpack(&token_account_info.data)?;
+    println!("Token Account unpacked");
     assert_eq!(token_account_data.amount, mint_amount, "We should have exactly the amount we minted");
+    println!("It is exactly the  amount we minted");
 
     // Verify metadata
     let metadata_account = client.get_account(&metadata_pda).await?;

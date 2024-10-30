@@ -1,5 +1,6 @@
 use checking_accounts_api::prelude::*;
 use steel::*;
+use checking_accounts_api::ID;
 
 
 pub fn process_check_accounts(accounts: &[AccountInfo], _data: &[u8]) -> ProgramResult {
@@ -7,6 +8,7 @@ pub fn process_check_accounts(accounts: &[AccountInfo], _data: &[u8]) -> Program
         return Err(ProgramError::NotEnoughAccountKeys);
     };
 
+    // VALIDATION CHECKS
     // Check 1: Validate payer is a signer
     // This corresponds to Anchor's: payer: Signer<'info>
     payer_info
@@ -20,7 +22,9 @@ pub fn process_check_accounts(accounts: &[AccountInfo], _data: &[u8]) -> Program
         .map_err(|_| ProgramError::InvalidAccountData)?;
 
     // Check 3: Validate account_to_change is mutable and owned by our program
-    // This corresponds to Anchor's: #[account(mut, owner = id())] account_to_change: UncheckedAccount<'info>
+    // This corresponds to Anchor's: 👇
+    // #[account(mut, owner = id())] 
+    // account_to_change: UncheckedAccount<'info>
     account_to_change_info
         .is_writable()
         .map_err(|_| ProgramError::InvalidAccountData)?
