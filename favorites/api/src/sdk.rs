@@ -31,12 +31,12 @@ pub fn set_favorites(
     }
 
     // Convert color to fixed-size array
-    let mut color_bytes = [0u8; STRING_MAX_SIZE];
+    let mut color_bytes = [0u8; 32];
     color_bytes[..color.len()].copy_from_slice(color.as_bytes());
 
     // Convert hobbies to fixed-size arrays
-    let mut hobbies_bytes = [[0u8; STRING_MAX_SIZE]; MAX_HOBBIES];
-    let mut hobbies_lens = [0u32; MAX_HOBBIES];
+    let mut hobbies_bytes = [[0u8; 32]; 32];
+    let mut hobbies_lens = [0u32; 32];
     for (i, hobby) in hobbies.iter().enumerate() {
         hobbies_bytes[i][..hobby.len()].copy_from_slice(hobby.as_bytes());
         hobbies_lens[i] = hobby.len() as u32;

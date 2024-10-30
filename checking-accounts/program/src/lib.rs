@@ -10,7 +10,7 @@ pub fn process_instruction(
     accounts: &[AccountInfo],
     data: &[u8],
 ) -> ProgramResult {
-    let (ix, data) = parse_instruction(&checking_accounts_api::ID, program_id, data)?;
+    let (ix, data) = parse_instruction::<ValidationInstruction>(&checking_accounts_api::ID, program_id, data)?;
 
     match ix {
         ValidationInstruction::CheckAccountsArgs => process_check_accounts(accounts, data)?

@@ -14,7 +14,7 @@ pub fn process_instruction(
     let (ix, data) = parse_instruction(&favorites_api::ID, program_id, data)?;
 
     match ix {
-        FavoritesInstruction::Favorites => process_set_favorites(accounts, data)?,
+        FavoritesInstruction::SetFavoritesArgs => process_set_favorites(accounts, data)?,
     }
 
     Ok(())

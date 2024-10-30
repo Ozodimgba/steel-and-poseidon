@@ -14,25 +14,26 @@ pub fn process_set_favorites(accounts: &[AccountInfo], data: &[u8]) -> ProgramRe
     // Parse instruction data
     let args = SetFavoritesArgs::try_from_bytes(data)?;
 
-    //Todo add bump
     // Calculate PDA
     let seeds = &[b"favorites", signer_info.key.as_ref()];
-    favorites_info.has_seeds(seeds, None, &favorites_api::ID)?;
+    let (_, bump_seed) = Pubkey::find_program_address(seeds, &favorites_api::ID);
 
-    //Todo fix up
     // If account doesn't exist, create it
     if favorites_info.data_is_empty() {
         create_account::<Favorites>(
             favorites_info,
-            system_program.key,
-            seeds,
             &favorites_api::ID,
+            seeds,
+            system_program,
             signer_info,
         )?;
     }
 
+    // Verify PDA
+    favorites_info.has_seeds(seeds, bump_seed, &favorites_api::ID)?;
+
     // Get mutable reference to account data
-    let favorites = favorites_info.as_account_mut::<Favorites>(&favorites_api::ID)?;
+    let favorites = favorites_info.to_account_mut::<Favorites>(&favorites_api::ID)?;
 
     // Update account data
     favorites.number = args.number;
