@@ -12,14 +12,14 @@ pub enum ReallocInstruction {
 #[derive(Clone, Copy, Debug, Pod, Zeroable)]
 pub struct Initialize {
     pub message_len: u32,
-    pub message: [u8; 1024],
+    pub message: [u8; 512],
 }
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug, Pod, Zeroable)]
 pub struct Update {
     pub message_len: u32,
-    pub message: [u8; 1024],
+    pub message: [u8; 512],
 }
 instruction!(ReallocInstruction, Initialize);
 instruction!(ReallocInstruction, Update);

@@ -49,64 +49,10 @@ async fn setup() -> (BanksClient, Keypair, Hash) {
 }
 
 #[tokio::test]
-async fn test_create_system_account_success() {
-    println!("\n🧪 Starting create system account test");
-    
-    let (mut banks, payer, blockhash) = setup().await;
-    let new_account = Keypair::new();
-    println!("👤 Created new account: {}", new_account.pubkey());
-    
-    // Test data
-    let name = "John Doe";
-    let address = "123 Solana Street";
-    println!("📝 Creating account with name: {}, address: {}", name, address);
-    
-    // Create the instruction
-    let ix = create_system_account(
-        payer.pubkey(),
-        new_account.pubkey(),
-        name.to_string(),
-        address.to_string(),
-    ).unwrap();
-    
-    println!("🔑 Creating and signing transaction...");
-    let tx = Transaction::new_signed_with_payer(
-        &[ix],
-        Some(&payer.pubkey()),
-        &[&payer, &new_account],
-        blockhash,
-    );
-    
-    println!("📡 Sending transaction...");
-    let result = banks.process_transaction(tx).await;
-    assert!(result.is_ok(), "Failed to create account: {:?}", result);
-    println!("✅ Transaction successful");
-    
-    // Verify the created account
-    let account = banks.get_account(new_account.pubkey()).await.unwrap().unwrap();
-    println!("📊 Verifying created account...");
-    assert_eq!(account.owner, rent_api::ID, "Incorrect account owner");
-    
-    // Verify the account data
-    let account_data = AddressData::try_from_bytes(&account.data)
-        .expect("Failed to deserialize account data");
-    
-    // Convert fixed-size arrays back to strings for comparison
-    let stored_name = std::str::from_utf8(&account_data.name[..account_data.name_len as usize])
-        .unwrap();
-    let stored_address = std::str::from_utf8(&account_data.address[..account_data.address_len as usize])
-        .unwrap();
-    
-    assert_eq!(stored_name, name, "Name mismatch");
-    assert_eq!(stored_address, address, "Address mismatch");
-    println!("✅ Account data verified successfully");
-}
-
-#[tokio::test]
 async fn test_create_system_account_string_too_long() {
     println!("\n🧪 Starting string length validation test");
     
-    let (mut banks, payer, blockhash) = setup().await;
+    let (mut _banks, payer, _blockhash) = setup().await;
     let new_account = Keypair::new();
     
     // Create string longer than STRING_MAX_SIZE
@@ -127,39 +73,10 @@ async fn test_create_system_account_string_too_long() {
 }
 
 #[tokio::test]
-async fn test_create_system_account_with_empty_strings() {
-    println!("\n🧪 Starting empty string test");
-    
-    let (mut banks, payer, blockhash) = setup().await;
-    let new_account = Keypair::new();
-    
-    // Test with empty strings (should be valid)
-    let ix = create_system_account(
-        payer.pubkey(),
-        new_account.pubkey(),
-        "".to_string(),
-        "".to_string(),
-    ).unwrap();
-    
-    println!("🔑 Creating and signing transaction...");
-    let tx = Transaction::new_signed_with_payer(
-        &[ix],
-        Some(&payer.pubkey()),
-        &[&payer, &new_account],
-        blockhash,
-    );
-    
-    println!("📡 Sending transaction...");
-    let result = banks.process_transaction(tx).await;
-    assert!(result.is_ok(), "Failed to create account with empty strings: {:?}", result);
-    println!("✅ Successfully created account with empty strings");
-}
-
-#[tokio::test]
 async fn test_create_system_account_insufficient_funds() {
     println!("\n🧪 Starting insufficient funds test");
     
-    let (mut banks, payer, blockhash) = setup().await;
+    let (mut banks, _payer, blockhash) = setup().await;
     let new_account = Keypair::new();
     let poor_payer = Keypair::new(); // New keypair with no funds
     

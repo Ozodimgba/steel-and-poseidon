@@ -1,6 +1,7 @@
 use realloc_api::prelude::*;
 use steel::*;
 use solana_program::rent::Rent;
+use realloc_api::ID;
 
 pub fn process_update(accounts: &[AccountInfo], data: &[u8]) -> ProgramResult {
     // Parse accounts
@@ -61,7 +62,7 @@ pub fn process_update(accounts: &[AccountInfo], data: &[u8]) -> ProgramResult {
     }
 
     // Update message data
-    let message = message_account_info.as_account_mut::<Message>(&ID)?;
+    let message = message_account_info.to_account_mut::<Message>(&ID)?;
     message.message_len = args.message_len;
     message.message[..args.message_len as usize].copy_from_slice(&args.message[..args.message_len as usize]);
 

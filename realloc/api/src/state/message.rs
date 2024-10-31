@@ -21,6 +21,10 @@ impl Message {
             4 + // message length
             message_len // actual message bytes
     }
+
+    pub fn find_pda(program_id: &Pubkey) -> (Pubkey, u8) {
+        Pubkey::find_program_address(&[MESSAGE_SEED], program_id)
+    }
 }
 
 account!(AccountType, Message);
