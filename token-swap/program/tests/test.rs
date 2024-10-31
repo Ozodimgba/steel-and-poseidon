@@ -6,7 +6,7 @@ use steel::*;
 
 async fn setup() -> (BanksClient, Keypair, Hash) {
     let mut program_test = ProgramTest::new(
-        "token-swap",
+        "token_swap_program",
         token_swap_api::ID,
         processor!(token_swap_program::process_instruction),
     );

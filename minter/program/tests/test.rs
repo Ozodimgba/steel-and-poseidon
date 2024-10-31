@@ -6,7 +6,7 @@ use steel::*;
 
 async fn setup() -> (BanksClient, Keypair, Hash) {
     let mut program_test = ProgramTest::new(
-        "minter",
+        "minter_program",
         minter_api::ID,
         processor!(minter_program::process_instruction),
     );

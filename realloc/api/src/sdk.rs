@@ -7,7 +7,7 @@ pub fn initialize(
     message_account: Pubkey,
     input: String,
 ) -> Instruction {
-    let mut message_bytes = [0u8; 1024];
+    let mut message_bytes = [0u8; 512];
     message_bytes[..input.len()].copy_from_slice(input.as_bytes());
 
     Instruction {
@@ -29,7 +29,7 @@ pub fn update(
     message_account: Pubkey,
     input: String,
 ) -> Instruction {
-    let mut message_bytes = [0u8; 1024];
+    let mut message_bytes = [0u8; 512];
     message_bytes[..input.len()].copy_from_slice(input.as_bytes());
 
     Instruction {
